@@ -1,0 +1,199 @@
+
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local MAX_SPEED = 500
+local DEFAULT_SPEED = 16
+
+--==================================================
+-- GUI
+--==================================================
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "VietnameseHub"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local main = Instance.new("Frame")
+main.Name = "Main"
+main.Size = UDim2.fromOffset(330, 390)
+main.Position = UDim2.new(0.5, -165, 0.5, -195)
+main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+main.BorderSizePixel = 0
+main.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = main
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -20, 0, 45)
+title.Position = UDim2.fromOffset(10, 5)
+title.BackgroundTransparency = 1
+title.Text = "🇻🇳 HUB - KHÔNG KEY"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextSize = 22
+title.Font = Enum.Font.GothamBold
+title.Parent = main
+
+local function createButton(text, y)
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(1, -40, 0, 42)
+	button.Position = UDim2.fromOffset(20, y)
+	button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+	button.TextColor3 = Color3.new(1, 1, 1)
+	button.TextSize = 16
+	button.Font = Enum.Font.Gotham
+	button.Text = text
+	button.BorderSizePixel = 0
+	button.Parent = main
+
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, 8)
+	c.Parent = button
+
+	return button
+end
+
+--==================================================
+-- SPEED
+--==================================================
+
+local speedBox = Instance.new("TextBox")
+speedBox.Size = UDim2.new(1, -40, 0, 42)
+speedBox.Position = UDim2.fromOffset(20, 65)
+speedBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+speedBox.TextColor3 = Color3.new(1, 1, 1)
+speedBox.PlaceholderColor3 = Color3.fromRGB(170, 170, 170)
+speedBox.PlaceholderText = "Nhập tốc độ 1 - 500"
+speedBox.Text = "16"
+speedBox.TextSize = 16
+speedBox.Font = Enum.Font.Gotham
+speedBox.ClearTextOnFocus = false
+speedBox.Parent = main
+
+local boxCorner = Instance.new("UICorner")
+boxCorner.CornerRadius = UDim.new(0, 8)
+boxCorner.Parent = speedBox
+
+local speedButton = createButton("⚡ Áp dụng tốc độ", 115)
+
+speedButton.MouseButton1Click:Connect(function()
+	local value = tonumber(speedBox.Text)
+
+	if not value then
+		speedBox.Text = tostring(DEFAULT_SPEED)
+		value = DEFAULT_SPEED
+	end
+
+	value = math.clamp(value, 1, MAX_SPEED)
+
+	local character = player.Character
+	if character then
+		local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+		if humanoid then
+			humanoid.WalkSpeed = value
+		end
+	end
+
+	speedBox.Text = tostring(value)
+end)
+
+--==================================================
+-- CHỌN TRỨNG
+--==================================================
+
+local eggLabel = Instance.new("TextLabel")
+eggLabel.Size = UDim2.new(1, -40, 0, 30)
+eggLabel.Position = UDim2.fromOffset(20, 170)
+eggLabel.BackgroundTransparency = 1
+eggLabel.Text = "🥚 Chọn loại trứng"
+eggLabel.TextColor3 = Color3.new(1, 1, 1)
+eggLabel.TextSize = 17
+eggLabel.Font = Enum.Font.GothamBold
+eggLabel.TextXAlignment = Enum.TextXAlignment.Left
+eggLabel.Parent = main
+
+local selectedEgg = "Thường"
+
+local eggs = {
+	"Thường",
+	"Hiếm",
+	"Sử thi",
+	"Huyền thoại",
+	"Cực hiếm"
+}
+
+local eggButton = createButton("🥚 Trứng: " .. selectedEgg, 205)
+
+eggButton.MouseButton1Click:Connect(function()
+	local current = table.find(eggs, selectedEgg) or 1
+	current += 1
+
+	if current > #eggs then
+		current = 1
+	end
+
+	selectedEgg = eggs[current]
+	eggButton.Text = "🥚 Trứng: " .. selectedEgg
+end)
+
+--==================================================
+-- AUTO THU TRỨNG
+--==================================================
+
+local autoCollect = false
+
+local autoButton = createButton("🤖 Auto thu trứng: TẮT", 255)
+
+autoButton.MouseButton1Click:Connect(function()
+	autoCollect = not autoCollect
+
+	if autoCollect then
+		autoButton.Text = "🤖 Auto thu trứng: BẬT"
+	else
+		autoButton.Text = "🤖 Auto thu trứng: TẮT"
+	end
+end)
+
+--==================================================
+-- ĐÓNG / MỞ MENU
+--==================================================
+
+local toggle = Instance.new("TextButton")
+toggle.Size = UDim2.fromOffset(55, 55)
+toggle.Position = UDim2.fromOffset(15, 15)
+toggle.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+toggle.Text = "☰"
+toggle.TextColor3 = Color3.new(1, 1, 1)
+toggle.TextSize = 25
+toggle.Font = Enum.Font.GothamBold
+toggle.Parent = gui
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(1, 0)
+toggleCorner.Parent = toggle
+
+toggle.MouseButton1Click:Connect(function()
+	main.Visible = not main.Visible
+end)
+
+--==================================================
+-- RESPAWN: GIỮ SPEED
+--==================================================
+
+player.CharacterAdded:Connect(function(character)
+	local humanoid = character:WaitForChild("Humanoid")
+
+	task.wait(0.2)
+
+	local value = tonumber(speedBox.Text)
+
+	if value then
+		humanoid.WalkSpeed = math.clamp(value, 1, MAX_SPEED)
+	end
+end)
+
+print("Hub đã khởi động - không cần key")
