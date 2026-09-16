@@ -1,0 +1,55 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "MenuTocDo"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local khung = Instance.new("Frame")
+khung.Size = UDim2.fromOffset(300, 190)
+khung.Position = UDim2.new(0.5, -150, 0.5, -95)
+khung.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+khung.Parent = gui
+
+local tieuDe = Instance.new("TextLabel")
+tieuDe.Size = UDim2.new(1, 0, 0, 45)
+tieuDe.Text = "⚡ MENU TỐC ĐỘ"
+tieuDe.TextSize = 22
+tieuDe.TextColor3 = Color3.new(1, 1, 1)
+tieuDe.BackgroundTransparency = 1
+tieuDe.Parent = khung
+
+local oNhap = Instance.new("TextBox")
+oNhap.Size = UDim2.new(1, -30, 0, 40)
+oNhap.Position = UDim2.fromOffset(15, 55)
+oNhap.Text = "50"
+oNhap.PlaceholderText = "Nhập tốc độ từ 1 đến 500"
+oNhap.TextSize = 17
+oNhap.Parent = khung
+
+local nut = Instance.new("TextButton")
+nut.Size = UDim2.new(1, -30, 0, 45)
+nut.Position = UDim2.fromOffset(15, 110)
+nut.Text = "🚀 ÁP DỤNG TỐC ĐỘ"
+nut.TextSize = 17
+nut.Parent = khung
+
+nut.MouseButton1Click:Connect(function()
+    local tocDo = tonumber(oNhap.Text)
+
+    if tocDo then
+        tocDo = math.clamp(tocDo, 1, 500)
+
+        local nhanVat = player.Character
+        local humanoid = nhanVat and nhanVat:FindFirstChildOfClass("Humanoid")
+
+        if humanoid then
+            humanoid.WalkSpeed = tocDo
+        end
+
+        oNhap.Text = tostring(tocDo)
+    else
+        oNhap.Text = "50"
+    end
+end)
